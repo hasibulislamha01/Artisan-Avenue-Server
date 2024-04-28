@@ -26,6 +26,33 @@ async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
+
+
+    const spotCollection = client.db("spotDB").collection('spot');
+
+
+    app.post("/spot", async( req, res ) => {
+        const newSpot = req.body;
+        console.log(newSpot);
+        const result = await spotCollection.insertOne(newSpot);
+        res.send(result)
+    })
+
+
+    app.get('/spot', async (req, res) => {
+        const cursor = spotCollection.find();
+        const result = await cursor.toArray();
+        res.send(result)
+    })
+
+
+    app.get('/mySpot/:email', async (req, res) => {
+        console.log(req.params.email)
+        const result = await spotCollection.find( {email: req.params.email}).toArray();
+        res.send(result)
+    })
+
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
