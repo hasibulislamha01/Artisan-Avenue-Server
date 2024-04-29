@@ -1,4 +1,4 @@
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const express = require('express')
 require('dotenv').config()
 const cors = require('cors');
@@ -6,7 +6,7 @@ const app = express()
 const port = process.env.PORT || 5000;
 
 
-console.log(process.env.DB_USER) 
+console.log(process.env.DB_USER)
 console.log(process.env.DB_PASS)
 
 
@@ -31,25 +31,78 @@ async function run() {
     const spotCollection = client.db("spotDB").collection('spot');
 
 
-    app.post("/spot", async( req, res ) => {
-        const newSpot = req.body;
-        console.log(newSpot);
-        const result = await spotCollection.insertOne(newSpot);
-        res.send(result)
+    app.post("/spot", async (req, res) => {
+      const newSpot = req.body;
+      console.log(newSpot);
+      const result = await spotCollection.insertOne(newSpot);
+      res.send(result)
+    })
+
+    
+    app.post('/countries', async (req, res) => {
+      const country = req.body;
+      console.log(country)
     })
 
 
     app.get('/spot', async (req, res) => {
-        const cursor = spotCollection.find();
-        const result = await cursor.toArray();
-        res.send(result)
+      const cursor = spotCollection.find();
+      const result = await cursor.toArray();
+      res.send(result)
     })
 
 
     app.get('/mySpot/:email', async (req, res) => {
-        console.log(req.params.email)
-        const result = await spotCollection.find( {email: req.params.email}).toArray();
-        res.send(result)
+      console.log(req.params.email)
+      const result = await spotCollection.find({ email: req.params.email }).toArray();
+      res.send(result)
+    })
+
+
+    app.get('/spot/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) }
+      const result = await spotCollection.findOne(query);
+      res.send(result)
+    })
+
+
+
+    app.put('/spot/:id', async (req, res) => {
+      const id = req.params.id;
+      // create a filter for a movie to update
+      const filter = { _id: new ObjectId(id) };
+
+      // this option instructs the method to create a document if no documents match the filter
+      const options = { upsert: true };
+
+      const updatedSpot = req.body;
+      const Spot = {
+        $set: {
+           spotName : updatedSpot.spotName,
+           photo : updatedSpot.photo,
+           countryName : updatedSpot.countryName,
+           location : updatedSpot.location,
+           description : updatedSpot.description,
+           cost : updatedSpot.cost,
+           season : updatedSpot.season,
+           travelDuration : updatedSpot.travelDuration,
+           visitors : updatedSpot.visitors,
+           userName : updatedSpot.userName,
+           email : updatedSpot.email,
+        },
+      };
+      const result = spotCollection.updateOne( filter, Spot, options)
+      res.send(result)
+
+    })
+
+
+    app.delete('/spot/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) }
+      result = await spotCollection.deleteOne(query)
+      res.send(result)
     })
 
 
@@ -72,10 +125,10 @@ app.use(express.json())
 
 
 app.get('/', (req, res) => {
-    res.send('Hello World!')
+  res.send('Hello World!')
 })
 
 
 app.listen(port, () => {
-    console.log(`travel site is running on port ${port}`)
+  console.log(`travel site is running on port ${port}`)
 })
