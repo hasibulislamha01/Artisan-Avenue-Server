@@ -70,6 +70,7 @@ async function run() {
 
     app.put('/spot/:id', async (req, res) => {
       const id = req.params.id;
+
       // create a filter for a movie to update
       const filter = { _id: new ObjectId(id) };
 
@@ -79,20 +80,20 @@ async function run() {
       const updatedSpot = req.body;
       const Spot = {
         $set: {
-           spotName : updatedSpot.spotName,
+          craftName : updatedSpot.spotName,
            photo : updatedSpot.photo,
-           countryName : updatedSpot.countryName,
-           location : updatedSpot.location,
+           subCategoryName : updatedSpot.countryName,
+           rating : updatedSpot.location,
            description : updatedSpot.description,
            cost : updatedSpot.cost,
-           season : updatedSpot.season,
+           customizable : updatedSpot.season,
            travelDuration : updatedSpot.travelDuration,
            visitors : updatedSpot.visitors,
            userName : updatedSpot.userName,
            email : updatedSpot.email,
         },
       };
-      const result = spotCollection.updateOne( filter, Spot, options)
+      const result = await spotCollection.updateOne( filter, Spot, options)
       res.send(result)
 
     })
