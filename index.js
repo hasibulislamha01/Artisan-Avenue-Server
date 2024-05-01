@@ -6,6 +6,12 @@ const app = express()
 const port = process.env.PORT || 5000;
 
 
+app.use(cors({
+  origin: ["http://localhost:5173", "https://travelsite-a2d59.web.app", ]
+}))
+app.use(express.json())
+
+
 console.log(process.env.DB_USER)
 console.log(process.env.DB_PASS)
 
@@ -21,6 +27,10 @@ const client = new MongoClient(uri, {
     deprecationErrors: true,
   }
 });
+
+// const db = client.db("spotDB");
+// the line below creates a collection named 'spot' in the database 
+// const spotData = db.collection('spot')  
 
 async function run() {
   try {
