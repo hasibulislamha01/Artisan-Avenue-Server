@@ -6,17 +6,17 @@ const app = express()
 const port = process.env.PORT || 5000;
 
 
-// app.use(cors())
+app.use(cors())
 // Enable CORS for all origins
-app.use((req, res, next) => {
-  res.setHeader('Access-Control-Allow-Origin', 'https://travelsite-a2d59.web.app');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  next();
-});
-app.use(cors({
-  origin: ["http://localhost:5173", "https://travelsite-a2d59.web.app", ]
-}))
+// app.use((req, res, next) => {
+//   res.setHeader('Access-Control-Allow-Origin', 'https://travelsite-a2d59.web.app');
+//   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+//   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+//   next();
+// });
+// app.use(cors({
+//   origin: ["http://localhost:5173", "https://travelsite-a2d59.web.app", ]
+// }))
 app.use(express.json())
 
 
@@ -47,7 +47,8 @@ async function run() {
 
 
     const spotCollection = client.db("spotDB").collection('spot');
-
+    const categoryCollection = client.db("spotDB").collection('artDB');
+    // console.log('category collection',categoryCollection)
 
     app.post("/spot", async (req, res) => {
       const newSpot = req.body;
@@ -56,7 +57,7 @@ async function run() {
       res.send(result)
     })
 
-    
+
     app.post('/countries', async (req, res) => {
       const country = req.body;
       console.log(country)
@@ -84,6 +85,13 @@ async function run() {
       res.send(result)
     })
 
+    app.get('/categories', async (req, res) => {
+      const cursor = categoryCollection.find();
+      const result = await cursor.toArray();
+      // console.log('RESULT',result)
+      res.send(result)
+    })
+
 
 
     app.put('/spot/:id', async (req, res) => {
@@ -98,20 +106,20 @@ async function run() {
       const updatedSpot = req.body;
       const Spot = {
         $set: {
-          craftName : updatedSpot.spotName,
-           photo : updatedSpot.photo,
-           subCategoryName : updatedSpot.countryName,
-           rating : updatedSpot.location,
-           description : updatedSpot.description,
-           cost : updatedSpot.cost,
-           customizable : updatedSpot.season,
-           travelDuration : updatedSpot.travelDuration,
-           visitors : updatedSpot.visitors,
-           userName : updatedSpot.userName,
-           email : updatedSpot.email,
+          craftName: updatedSpot.spotName,
+          photo: updatedSpot.photo,
+          subCategoryName: updatedSpot.countryName,
+          rating: updatedSpot.location,
+          description: updatedSpot.description,
+          cost: updatedSpot.cost,
+          customizable: updatedSpot.season,
+          travelDuration: updatedSpot.travelDuration,
+          visitors: updatedSpot.visitors,
+          userName: updatedSpot.userName,
+          email: updatedSpot.email,
         },
       };
-      const result = await spotCollection.updateOne( filter, Spot, options)
+      const result = await spotCollection.updateOne(filter, Spot, options)
       res.send(result)
 
     })
