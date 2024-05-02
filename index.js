@@ -91,6 +91,15 @@ async function run() {
       // console.log('RESULT',result)
       res.send(result)
     })
+    app.get('/spot/:subCategory', async (req, res) => {
+      const subCategory = req.params.subCategory; 
+      console.log(subCategory)
+      const query = { subCategory: subCategory }
+      // const cursor = categoryCollection.find( query );
+      const result = await spotCollection.find( query ).toArray();
+      console.log('RESULT',result)
+      res.send(result)
+    })
 
 
 
